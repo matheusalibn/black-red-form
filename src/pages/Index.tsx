@@ -4,23 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import FormField from '@/components/FormField';
-import { User, FileText, MapPin } from 'lucide-react';
+import { User, FileText } from 'lucide-react';
 
 const Index = () => {
   const [formData, setFormData] = useState({
-    cpf: '',
     nome: '',
     dataNascimento: '',
-    profissao: '',
-    email: '',
-    telefone: '',
-    cep: '',
-    endereco: '',
-    numero: '',
-    complemento: '',
-    bairro: '',
-    cidade: '',
-    estado: ''
+    cpf: '',
+    estadoCivil: '',
+    genero: ''
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -34,7 +26,7 @@ const Index = () => {
     e.preventDefault();
     
     // Validação básica
-    const requiredFields = ['cpf', 'nome', 'dataNascimento', 'profissao', 'email', 'telefone', 'cep', 'endereco', 'numero', 'bairro', 'cidade', 'estado'];
+    const requiredFields = ['nome', 'dataNascimento', 'cpf', 'estadoCivil', 'genero'];
     const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
     
     if (missingFields.length > 0) {
@@ -55,30 +47,9 @@ const Index = () => {
     });
   };
 
-  const handleCepBlur = async () => {
-    if (formData.cep.replace(/\D/g, '').length === 8) {
-      try {
-        const response = await fetch(`https://viacep.com.br/ws/${formData.cep.replace(/\D/g, '')}/json/`);
-        const data = await response.json();
-        
-        if (!data.erro) {
-          setFormData(prev => ({
-            ...prev,
-            endereco: data.logradouro || '',
-            bairro: data.bairro || '',
-            cidade: data.localidade || '',
-            estado: data.uf || ''
-          }));
-        }
-      } catch (error) {
-        console.error('Erro ao buscar CEP:', error);
-      }
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl animate-fade-in">
+      <div className="w-full max-w-2xl animate-fade-in">
         <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm shadow-2xl">
           <CardHeader className="text-center pb-8">
             <div className="flex justify-center mb-4">
@@ -103,17 +74,7 @@ const Index = () => {
                   <h3 className="text-xl font-semibold text-white">Dados Pessoais</h3>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    id="cpf"
-                    label="CPF"
-                    placeholder="000.000.000-00"
-                    value={formData.cpf}
-                    onChange={(value) => handleInputChange('cpf', value)}
-                    mask="cpf"
-                    required
-                  />
-                  
+                <div className="grid grid-cols-1 gap-6">
                   <FormField
                     id="nome"
                     label="Nome Completo"
@@ -123,134 +84,69 @@ const Index = () => {
                     required
                   />
                   
-                  <FormField
-                    id="dataNascimento"
-                    label="Data de Nascimento"
-                    type="date"
-                    value={formData.dataNascimento}
-                    onChange={(value) => handleInputChange('dataNascimento', value)}
-                    required
-                  />
-                  
-                  <FormField
-                    id="profissao"
-                    label="Profissão"
-                    placeholder="Digite sua profissão"
-                    value={formData.profissao}
-                    onChange={(value) => handleInputChange('profissao', value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Contato */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-5 h-5 bg-form-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">@</span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-white">Contato</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    id="email"
-                    label="E-mail"
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={formData.email}
-                    onChange={(value) => handleInputChange('email', value)}
-                    required
-                  />
-                  
-                  <FormField
-                    id="telefone"
-                    label="Telefone"
-                    placeholder="(00) 00000-0000"
-                    value={formData.telefone}
-                    onChange={(value) => handleInputChange('telefone', value)}
-                    mask="phone"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Endereço */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <MapPin className="w-5 h-5 text-form-red-500" />
-                  <h3 className="text-xl font-semibold text-white">Endereço</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <FormField
-                    id="cep"
-                    label="CEP"
-                    placeholder="00000-000"
-                    value={formData.cep}
-                    onChange={(value) => handleInputChange('cep', value)}
-                    mask="cep"
-                    required
-                  />
-                  
-                  <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      id="endereco"
-                      label="Endereço"
-                      placeholder="Rua, Avenida, etc."
-                      value={formData.endereco}
-                      onChange={(value) => handleInputChange('endereco', value)}
+                      id="dataNascimento"
+                      label="Data de Nascimento"
+                      type="date"
+                      value={formData.dataNascimento}
+                      onChange={(value) => handleInputChange('dataNascimento', value)}
+                      required
+                    />
+                    
+                    <FormField
+                      id="cpf"
+                      label="CPF"
+                      placeholder="000.000.000-00"
+                      value={formData.cpf}
+                      onChange={(value) => handleInputChange('cpf', value)}
+                      mask="cpf"
                       required
                     />
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <FormField
-                    id="numero"
-                    label="Número"
-                    placeholder="123"
-                    value={formData.numero}
-                    onChange={(value) => handleInputChange('numero', value)}
-                    required
-                  />
                   
-                  <FormField
-                    id="complemento"
-                    label="Complemento"
-                    placeholder="Apto, Bloco, etc."
-                    value={formData.complemento}
-                    onChange={(value) => handleInputChange('complemento', value)}
-                  />
-                  
-                  <FormField
-                    id="bairro"
-                    label="Bairro"
-                    placeholder="Nome do bairro"
-                    value={formData.bairro}
-                    onChange={(value) => handleInputChange('bairro', value)}
-                    required
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    id="cidade"
-                    label="Cidade"
-                    placeholder="Nome da cidade"
-                    value={formData.cidade}
-                    onChange={(value) => handleInputChange('cidade', value)}
-                    required
-                  />
-                  
-                  <FormField
-                    id="estado"
-                    label="Estado"
-                    placeholder="UF"
-                    value={formData.estado}
-                    onChange={(value) => handleInputChange('estado', value)}
-                    required
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label htmlFor="estadoCivil" className="text-sm font-medium text-white flex items-center gap-1">
+                        Estado Civil
+                        <span className="text-form-red-500">*</span>
+                      </label>
+                      <select
+                        id="estadoCivil"
+                        value={formData.estadoCivil}
+                        onChange={(e) => handleInputChange('estadoCivil', e.target.value)}
+                        required
+                        className="flex h-10 w-full rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-white placeholder:text-gray-400 focus:border-form-red-500 focus:ring-form-red-500 focus:outline-none transition-all duration-200 hover:border-gray-600"
+                      >
+                        <option value="">Selecione seu estado civil</option>
+                        <option value="solteiro">Solteiro(a)</option>
+                        <option value="casado">Casado(a)</option>
+                        <option value="divorciado">Divorciado(a)</option>
+                        <option value="viuvo">Viúvo(a)</option>
+                        <option value="separado">Separado(a)</option>
+                      </select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="genero" className="text-sm font-medium text-white flex items-center gap-1">
+                        Gênero
+                        <span className="text-form-red-500">*</span>
+                      </label>
+                      <select
+                        id="genero"
+                        value={formData.genero}
+                        onChange={(e) => handleInputChange('genero', e.target.value)}
+                        required
+                        className="flex h-10 w-full rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-white placeholder:text-gray-400 focus:border-form-red-500 focus:ring-form-red-500 focus:outline-none transition-all duration-200 hover:border-gray-600"
+                      >
+                        <option value="">Selecione seu gênero</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="feminino">Feminino</option>
+                        <option value="nao-binario">Não-binário</option>
+                        <option value="prefiro-nao-dizer">Prefiro não dizer</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
 
